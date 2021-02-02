@@ -1,96 +1,50 @@
-import 'customer.dart';
+import 'product.dart';
 
-// global payment methods
-enum paymentMethod {QR, Card, Cash}
-
-paymentMethod _paymentType;
-
-void setPaymentType(paymentMethod pt) {
-  _paymentType = pt;
-}
-
-paymentMethod getPaymentMethod() {
-  return _paymentType;
-}
-
-class Order {
-
-  static Customer _customer;
-  static Cart cart = new Cart();
-
-  static void clear() {
-    _customer = null;
-    cart = new Cart();
-  }
-
-  static void setCustomer(Customer customer) {
-    _customer = customer;
-  }
-
-  static Customer getCustomer() => _customer;
-
-}
-
+/// Cart
+/// Stores the different items added by the user
+/// and keeps track of the total to be paid
+/// TODO: add max amount of items to be added to cart
 class Cart {
-
+  // list of items
   List<CartItem> _items;
+  // added total of unit price + quantity
   double _total;
 
+  // constructor
   Cart() {
     _items = new List();
     _total = 0;
   }
 
-  void addToCart(CartItem item) {
+  // adds an item to the cart
+  void addToCart(Product item) {
     _items.add(item);
   }
 
+  // gets the total
   double getTotal() => _total;
 
+  // returns the amount of items in the cart
   int numOfItems() => _items.length;
 
+  // removes the last item added
   void removeLast() {
     _items.removeLast();
   }
 
+  void removeLastPrice() {
+    _total -= double.tryParse(_items.last.getItemTotal().toStringAsFixed(2));
+  }
+
+  /// adds a price to the last item added
+  /// updates the total
   void addPrice(double price) {
-    _items.last.setUnitPrice(price);
+    _items.last.unitPrice = price;
     _total += price;
   }
 
+  // returns a specific item at index location
   CartItem getItem(int index) {
     return _items[index];
   }
 }
-
-
-class CartItem {
-
-  String _name;
-  int _quantity;
-  String _sku;
-  double _unitPrice;
-
-  CartItem(this._name, this._quantity, this._sku);
-
-  void setUnitPrice(double price) {
-    _unitPrice = price;
-  }
-
-  double getUnitPrice() => _unitPrice;
-
-  String getName() => _name;
-
-  String getQuantity() => _quantity.toString();
-
-  String getSku() => _sku;
-
-  String getItemTotal() {
-    return (_quantity * _unitPrice).toStringAsFixed(2);
-  }
-}
-
-
-
-
-

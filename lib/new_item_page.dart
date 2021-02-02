@@ -5,15 +5,22 @@ import 'package:flutter/services.dart';
 import 'price_page.dart';
 
 // cart class
-import 'models/cart.dart';
+import 'models/order.dart';
+import 'models/product.dart';
 
+/// New Item page
+/// Allows users to input a new item.
+/// Users are required to input a name, SKU is optional
 class NewItemPage extends StatefulWidget {
   @override
   _NewItemPageState createState() => _NewItemPageState();
 }
 
+/// New Item page
+/// Allows users to input a new item.
+/// Users are required to input a name, SKU is optional
+/// Stateful to show error messages
 class _NewItemPageState extends State<NewItemPage> {
-
   // form key
   final GlobalKey<FormState> _formKey = new GlobalKey();
 
@@ -24,7 +31,7 @@ class _NewItemPageState extends State<NewItemPage> {
   final TextEditingController _skuController = TextEditingController();
 
   // item name and sku
-  // quantity defaults to 1
+  // quantity defaults to 1 for new items
   String _itemName;
   String _itemSKU;
   final int _quantity = 1;
@@ -47,14 +54,12 @@ class _NewItemPageState extends State<NewItemPage> {
       decoration: const InputDecoration(
         labelText: 'Name',
       ),
-      inputFormatters: [
-        LengthLimitingTextInputFormatter(16)
-      ],
-      onSaved: (val){
+      inputFormatters: [LengthLimitingTextInputFormatter(16)],
+      onSaved: (val) {
         _itemName = val;
       },
       validator: (val) {
-        if(val.isEmpty || val.length < 3) {
+        if (val.isEmpty || val.length < 3) {
           return 'Please enter a valid name';
         }
         return null;
@@ -74,11 +79,9 @@ class _NewItemPageState extends State<NewItemPage> {
         decoration: const InputDecoration(
           labelText: 'SKU (optional)*',
         ),
-        inputFormatters: [
-          LengthLimitingTextInputFormatter(10)
-        ],
+        inputFormatters: [LengthLimitingTextInputFormatter(10)],
         onSaved: (val) {
-          _itemSKU = val == null? "" : val;
+          _itemSKU = val == null ? "" : val;
         },
         validator: (val) {
           return null;
@@ -100,18 +103,17 @@ class _NewItemPageState extends State<NewItemPage> {
         ),
         color: Colors.blue,
         child: Text(
-          "continue",
-          style: TextStyle(
-              color: Colors.white
-          ),
+          "Continue",
+          style: TextStyle(color: Colors.white),
         ),
         onPressed: () {
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
             // creates a new Cart item and adds it to the list
-            Order.cart.addToCart(new CartItem(_itemName, _quantity, _itemSKU));
-            Navigator.push(
-                context,
+            Order.cart.addToCart(
+                new CartItem(_itemName, _itemSKU, _quantity)
+            );
+            Navigator.push(context,
                 MaterialPageRoute(builder: (context) => PriceInputPage())
             );
           }
@@ -133,8 +135,7 @@ class _NewItemPageState extends State<NewItemPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-            )
-        ),
+            )),
         actions: [
           Padding(
             padding: const EdgeInsets.all(10),
@@ -142,30 +143,34 @@ class _NewItemPageState extends State<NewItemPage> {
           )
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(
-            "New Item",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 32,
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(
+              "New Item",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 32,
+              ),
             ),
-          ),
-          Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                itemNameInput(),
-                itemSKUInput(),
-                nextButton()
-              ],
+            Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  itemNameInput(),
+                  itemSKUInput(),
+                  nextButton()
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      )
     );
   }
 }

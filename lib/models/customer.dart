@@ -1,28 +1,17 @@
-
+/// Customer
+/// Model to set the information of
+/// customers (new or from database)
 class Customer {
-
+  // Customer information
   String name;
   String id;
   String phone;
   String address;
+  String city;
+  String email;
 
-  Customer(this.name, this.id, this.phone, this.address);
+  // constructor
+  Customer(this.name, this.id, this.phone, this.address, this.city, this.email);
 }
 
-class ExampleCustomer {
 
-  static Customer _exampleCustomer = Customer(
-        "John Doe",
-        "0924749146",
-        "123-456-7890",
-        "Somewhere, US"
-    );
-
-  static Customer searchCustomer(String clientID) {
-    if (clientID == _exampleCustomer.id) {
-      return _exampleCustomer;
-    }
-    return null;
-  }
-
-}

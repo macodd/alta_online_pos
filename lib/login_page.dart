@@ -20,7 +20,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
-
   // key used for validating the user's email and password
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   // email text box
@@ -28,15 +27,15 @@ class _LoginPage extends State<LoginPage> {
   // password text box
   final TextEditingController _passwordController = TextEditingController();
 
-  bool _success;  // successful log in
-  String _userEmail;  // email of success log in to save
+  bool _success; // successful log in
+  String _userEmail; // email of success log in to save
   // String _userId;  // user doc id
-  String _errorDesc;  // description of error if unsuccessful log in
+  String _errorDesc; // description of error if unsuccessful log in
 
   @override
   void initState() {
     super.initState();
-    getEmailFromStorage();  // gets email if stored in local storage
+    getEmailFromStorage(); // gets email if stored in local storage
   }
 
   /*
@@ -47,15 +46,12 @@ class _LoginPage extends State<LoginPage> {
         child: const Text(
           'Forgot password?',
         ),
-        onPressed:  () {
+        onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => PasswordRecoveryPage()
-            ),
+            MaterialPageRoute(builder: (context) => PasswordRecoveryPage()),
           );
-        }
-    );
+        });
   }
 
   Widget _emailPasswordForm() {
@@ -67,10 +63,11 @@ class _LoginPage extends State<LoginPage> {
             // text field used for entering the email
             TextFormField(
               controller: _emailController,
+              textInputAction: TextInputAction.next,
               decoration: const InputDecoration(labelText: 'Email'),
               cursorColor: Colors.white,
               validator: (val) {
-                if(val.isEmpty) {
+                if (val.isEmpty) {
                   return 'Please enter your email';
                 }
                 return null;
@@ -78,13 +75,14 @@ class _LoginPage extends State<LoginPage> {
             ),
             // text field used for entering the password
             TextFormField(
-              obscureText: true,  // hides the password
-              enableSuggestions: false,  // disable suggestions
-              autocorrect: false,  // do not allow auto correct
+              obscureText: true, // hides the password
+              enableSuggestions: false, // disable suggestions
+              autocorrect: false, // do not allow auto correct
               controller: _passwordController,
+              textInputAction: TextInputAction.done,
               decoration: const InputDecoration(labelText: 'Password'),
               validator: (val) {
-                if(val.isEmpty) {
+                if (val.isEmpty) {
                   return 'Please enter your password';
                 }
                 return null;
@@ -94,9 +92,7 @@ class _LoginPage extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               alignment: Alignment.center,
               child: Text(
-                _success == null
-                    ? ''
-                    : (_success ? '' : _errorDesc),
+                _success == null ? '' : (_success ? '' : _errorDesc),
                 style: TextStyle(
                   color: Colors.red,
                 ),
@@ -109,15 +105,12 @@ class _LoginPage extends State<LoginPage> {
               height: 50,
               child: RaisedButton(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)
-                ),
-                color: Colors.blueGrey,
+                    borderRadius: BorderRadius.circular(30)),
+                color: Colors.green,
                 onPressed: () async {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => HomePage()
-                    ),
+                    MaterialPageRoute(builder: (context) => HomePage()),
                   );
 
                   // if(_formKey.currentState.validate()) {
@@ -145,15 +138,12 @@ class _LoginPage extends State<LoginPage> {
                 },
                 child: Text(
                   'Login',
-                  style: TextStyle(
-                      color: Colors.white
-                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
           ],
-        )
-    );
+        ));
   }
 
   /*
@@ -163,7 +153,7 @@ class _LoginPage extends State<LoginPage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String userEmail = prefs.getString('email');
 
-    if(userEmail != null) {
+    if (userEmail != null) {
       setState(() {
         // sets the text of the controller to the user email
         _emailController.text = userEmail;
@@ -185,7 +175,6 @@ class _LoginPage extends State<LoginPage> {
    * TODO: sign in with password in profile class
    */
   Future<bool> _signInWithEmailAndPassword() async {
-
     // authenticated by Firebase
     User user;
     bool loggedIn = false;
@@ -193,9 +182,8 @@ class _LoginPage extends State<LoginPage> {
     try {
       // sign in the user using email and password
       user = (await _auth.signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text
-      )).user;
+              email: _emailController.text, password: _passwordController.text))
+          .user;
 
       if (user != null) {
         setState(() {
@@ -233,7 +221,10 @@ class _LoginPage extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+        body: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+      child: Center(
         child: ListView(
           padding: const EdgeInsets.all(16),
           shrinkWrap: true,
@@ -250,7 +241,6 @@ class _LoginPage extends State<LoginPage> {
           ],
         ),
       ),
-    );
+    ));
   }
 }
-

@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 // user profile holder
 class Profile {
-
   // firebase instance
   static final fireStoreInstance = FirebaseFirestore.instance;
 
@@ -15,14 +14,16 @@ class Profile {
   static Future<bool> setUserInfo(String userId) async {
     bool downloadData;
     try {
-      await fireStoreInstance.collection('users').doc(userId).get().then(
-              (value) {
-            _name = value.data()['name'];
-            _email = value.data()['email'];
-            downloadData = true;
-          });
-    }
-    catch (err) {
+      await fireStoreInstance
+          .collection('users')
+          .doc(userId)
+          .get()
+          .then((value) {
+        _name = value.data()['name'];
+        _email = value.data()['email'];
+        downloadData = true;
+      });
+    } catch (err) {
       downloadData = false;
     }
 
@@ -35,6 +36,3 @@ class Profile {
   // get user email
   static String getEmail() => _email;
 }
-
-
-

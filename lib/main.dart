@@ -11,7 +11,7 @@ import 'home_page.dart';
  */
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();  // waits on firebase to initialize
+  await Firebase.initializeApp(); // waits on firebase to initialize
   runApp(AltaApp());
 }
 
@@ -24,11 +24,14 @@ class AltaApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        buttonBarTheme: ButtonBarThemeData(
+          alignment: MainAxisAlignment.center
+        )
       ),
       initialRoute: '/',
       routes: {
-        '/' : (context) => LoginPage(),
-        '/main' : (context) => HomePage(),
+        '/': (context) => LoginPage(),
+        '/main': (context) => HomePage(),
       },
     );
   }

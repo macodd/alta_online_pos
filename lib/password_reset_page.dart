@@ -13,7 +13,6 @@ class PasswordRecoveryPage extends StatefulWidget {
 }
 
 class _PasswordRecoveryPageState extends State<PasswordRecoveryPage> {
-
   // key used for validating the user's email and password
   final GlobalKey<FormState> _recoveryFormKey = GlobalKey<FormState>();
   // email text box
@@ -23,17 +22,16 @@ class _PasswordRecoveryPageState extends State<PasswordRecoveryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
-          child: ListView(
-            padding: const EdgeInsets.all(16.0),
-            shrinkWrap: true,
-            children: <Widget>[
-              passwordRecoveryMessage(),
-              SizedBox(height: 20),
-              emailRecoveryForm(),
-            ],
-          ),
-        )
-    );
+      child: ListView(
+        padding: const EdgeInsets.all(16.0),
+        shrinkWrap: true,
+        children: <Widget>[
+          passwordRecoveryMessage(),
+          SizedBox(height: 20),
+          emailRecoveryForm(),
+        ],
+      ),
+    ));
   }
 
   // message shown to user about email recovery
@@ -41,10 +39,7 @@ class _PasswordRecoveryPageState extends State<PasswordRecoveryPage> {
     return Text(
       'Password Reset',
       textAlign: TextAlign.center,
-      style: TextStyle(
-          fontSize: 18.0,
-          fontWeight: FontWeight.bold
-      ),
+      style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
     );
   }
 
@@ -60,7 +55,7 @@ class _PasswordRecoveryPageState extends State<PasswordRecoveryPage> {
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
               validator: (String val) {
-                if(val.isEmpty) {
+                if (val.isEmpty) {
                   return 'Please enter your email';
                 }
                 return null;
@@ -73,7 +68,7 @@ class _PasswordRecoveryPageState extends State<PasswordRecoveryPage> {
                   return RaisedButton(
                     color: Colors.blueGrey,
                     onPressed: () async {
-                      if(_recoveryFormKey.currentState.validate()) {
+                      if (_recoveryFormKey.currentState.validate()) {
                         // send email via firebase
                         resetPassword(_emailController.text);
                         // inform user of email reset
@@ -84,15 +79,11 @@ class _PasswordRecoveryPageState extends State<PasswordRecoveryPage> {
                     },
                     child: const Text(
                       'Recover',
-                      style: TextStyle(
-                          color: Colors.white
-                      ),
+                      style: TextStyle(color: Colors.white),
                     ),
                   );
-                })
-            ),
-          ]
-      ),
+                })),
+          ]),
     );
   }
 

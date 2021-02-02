@@ -1,45 +1,43 @@
 import 'package:flutter/material.dart';
 
-// local pages
+// next page
 import 'new_item_page.dart';
+import 'products_page.dart';
 
 // payment type
-import 'models/cart.dart';
+import 'models/order.dart';
 
-class ChargePage extends StatefulWidget {
-  @override
-  _ChargePageState createState() => _ChargePageState();
-}
-
-class _ChargePageState extends State<ChargePage> {
-
+/// StartPage
+/// Page that allows the user to select which
+/// type of item they wish to input (new item, old item)
+class StartPage extends StatelessWidget {
   // type of payment
-  final paymentMethod paymentType = getPaymentMethod();
+  final PaymentMethod paymentType = Order.getPaymentMethod();
 
   // icon to show user based on previous selection
   // TODO: show image instead of Icon
-  Icon _icon;
-
-  @override
-  void initState() {
-    super.initState();
+  Widget initIconState() {
+    Icon icon;
     double _size = 50;
     // select which icon to show
-    switch(paymentType) {
-      case paymentMethod.QR:
-        _icon = Icon(Icons.qr_code_outlined, size: _size);
+    switch (paymentType) {
+      case PaymentMethod.QR:
+        icon = Icon(Icons.qr_code_outlined, size: _size);
         break;
-      case paymentMethod.Card:
-        _icon = Icon(Icons.credit_card_outlined, size: _size);
+      case PaymentMethod.Card:
+        icon = Icon(Icons.credit_card_outlined, size: _size);
         break;
-      case paymentMethod.Cash:
-        _icon = Icon(Icons.attach_money_outlined, size: _size);
+      case PaymentMethod.Cash:
+        icon = Icon(Icons.attach_money_outlined, size: _size);
         break;
     }
+    return icon;
   }
 
   @override
   Widget build(BuildContext context) {
+    // set the icon based on the payment method
+    Icon _icon = initIconState();
 
     // widget to re route base on selection
     Widget itemSelector(_text, _someClass) {
@@ -47,17 +45,13 @@ class _ChargePageState extends State<ChargePage> {
         width: 150,
         height: 50,
         child: OutlineButton(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
             child: Text(_text),
             onPressed: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => _someClass)
-              );
-            }
-        ),
+                  context, MaterialPageRoute(builder: (context) => _someClass));
+            }),
       );
     }
 
@@ -70,11 +64,13 @@ class _ChargePageState extends State<ChargePage> {
             child: BackButton(
               color: Colors.black,
               onPressed: () {
+                // clears any current orders
                 Order.clear();
+                // pushes to main without allowing to go back to previous
+                // screens
                 Navigator.popAndPushNamed(context, '/main');
               },
-            )
-        ),
+            )),
         actions: [
           Padding(
             padding: const EdgeInsets.all(10),
@@ -82,26 +78,23 @@ class _ChargePageState extends State<ChargePage> {
           )
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              SizedBox(
-                height: 100,
-                child: _icon,
-              ),
-              itemSelector("New Item", NewItemPage()),
-              SizedBox(
-                width: 100,
-                child: Divider(height: 40),
-              ),
-              itemSelector("Select Items", null)
-            ],
-          ),
-        ]
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            SizedBox(
+              height: 100,
+              child: _icon,
+            ),
+            itemSelector("New Item", NewItemPage()),
+            SizedBox(
+              width: 100,
+              child: Divider(height: 40),
+            ),
+            itemSelector("Select Items", ProductsListPage())
+          ],
+        ),
       ),
     );
   }
