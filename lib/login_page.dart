@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // local
+import 'examples/example_objects.dart';
 import 'home_page.dart';
 // import 'models/profile.dart';
 
@@ -100,50 +101,58 @@ class _LoginPage extends State<LoginPage> {
               ),
             ),
             // button for validating
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                color: Colors.green,
-                onPressed: () async {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 200,
+                  height: 50,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
+                    color: Colors.green,
+                    onPressed: () async {
+                      ExampleProducts.callToApi();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      );
 
-                  // if(_formKey.currentState.validate()) {
-                  //   // check to see if it was a successful login
-                  //   _signInWithEmailAndPassword().then((isLoggedIn) {
-                  //     // clears password input field
-                  //     _passwordController.clear();
-                  //     if(isLoggedIn) {
-                  //       _saveEmailToStorage();
-                  //       AltaUser.setUserInfo(_userId).then((good) {
-                  //         if(good) {
-                  //           Navigator.of(context).push(
-                  //             MaterialPageRoute(
-                  //                 builder: (context) => HomePage()
-                  //             ),
-                  //           );
-                  //         } else {
-                  //           TODO: add error message for unsuccessful login
-                  //           print("error");
-                  //         }
-                  //       });
-                  //     }
-                  //   });
-                  // }
-                },
-                child: Text(
-                  'Login',
-                  style: TextStyle(color: Colors.white),
+                      // if(_formKey.currentState.validate()) {
+                      //   // check to see if it was a successful login
+                      //   _signInWithEmailAndPassword().then((isLoggedIn) {
+                      //     // clears password input field
+                      //     _passwordController.clear();
+                      //     if(isLoggedIn) {
+                      //       _saveEmailToStorage();
+                      //       AltaUser.setUserInfo(_userId).then((good) {
+                      //         if(good) {
+                      //           Navigator.of(context).push(
+                      //             MaterialPageRoute(
+                      //                 builder: (context) => HomePage()
+                      //             ),
+                      //           );
+                      //         } else {
+                      //           TODO: add error message for unsuccessful login
+                      //           print("error");
+                      //         }
+                      //       });
+                      //     }
+                      //   });
+                      // }
+                    },
+                    child: Text(
+                      'Login',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              ],
+            )
           ],
-        ));
+        )
+    );
   }
 
   /*
@@ -221,26 +230,27 @@ class _LoginPage extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
-      child: Center(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          shrinkWrap: true,
-          children: <Widget>[
-            Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FlutterLogo(size: 100),
-                _emailPasswordForm(),
-                _forgotPasswordButton(),
-              ],
-            )
-          ],
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+        child: Center(
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            shrinkWrap: true,
+            children: <Widget>[
+              Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FlutterLogo(size: 100),
+                  _emailPasswordForm(),
+                  _forgotPasswordButton(),
+                ],
+              )
+            ],
+          ),
         ),
-      ),
-    ));
+      )
+    );
   }
 }

@@ -43,49 +43,67 @@ class _CashPageState extends State<CashPage> {
   /// Title displayed to the user
   Widget displayTitle() {
     return Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Cash Received", style: TextStyle(fontSize: 18)),
-          ],
-        ));
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Cash Received", style: TextStyle(fontSize: 18)),
+        ],
+      )
+    );
+  }
+
+  Widget amountInputForm() {
+    return  Form(
+      key: _formKey,
+      child: Stack(
+        fit: StackFit.loose,
+        children: [
+          // Shows amount in decimal form
+          displayAmount(),
+          // call to keyboard
+          amountInput()
+        ],
+      ),
+    );
   }
 
   /// Displays error messages
   Widget displayErrorMessage() {
     return Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _errorMsg,
-              style: TextStyle(color: Colors.red),
-            )
-          ],
-        ));
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            _errorMsg,
+            style: TextStyle(color: Colors.red),
+          )
+        ],
+      )
+    );
   }
 
   /// Displays the amount in decimal format
   /// fixed with 2 decimal places and rounded up.
   Widget displayAmount() {
     return Card(
-        elevation: 10.0,
-        color: Colors.white,
-        child: Container(
-          height: 80,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Text(
-                "\$ " + _displayAmount.toStringAsFixed(2),
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              )
-            ],
-          ),
-        ));
+      elevation: 10.0,
+      color: Colors.white,
+      child: Container(
+        height: 80,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(
+              "\$ " + _displayAmount.toStringAsFixed(2),
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            )
+          ],
+        ),
+      )
+    );
   }
 
   /// Displays the total along with
@@ -96,9 +114,20 @@ class _CashPageState extends State<CashPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Total :", style: TextStyle(fontSize: 20, color: Colors.grey)),
-          Text(_totalAmount.toStringAsFixed(2),
-              style: TextStyle(fontSize: 20, color: Colors.grey)),
+          Text(
+            "Total :",
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.grey
+            )
+          ),
+          Text(
+            _totalAmount.toStringAsFixed(2),
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.grey
+            )
+          ),
         ],
       ),
     );
@@ -112,46 +141,88 @@ class _CashPageState extends State<CashPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Change :", style: TextStyle(fontSize: 20, color: Colors.grey)),
-          Text(_displayChange.toStringAsFixed(2),
-              style: TextStyle(fontSize: 20, color: Colors.grey)),
+          Text(
+            "Change :",
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.grey
+            )
+          ),
+          Text(
+            _displayChange.toStringAsFixed(2),
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.grey
+            )
+          ),
         ],
       ),
     );
   }
 
-  ///
+  Widget slideButton(context) {
+    return Center(
+      child: SliderButton(
+        label: Text(
+          "Swipe to complete",
+          style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 17
+          ),
+        ),
+        icon: Center(
+            child: Icon(
+              Icons.double_arrow_outlined,
+              color: Colors.white,
+              size: 40.0,
+              semanticLabel: 'Text to announce in accessibility modes',
+            )
+        ),
+        ///Change All the color and size from here.
+        width: 270,
+        buttonColor: Colors.green,
+        backgroundColor: Colors.blue,
+        highlightedColor: Colors.green,
+        baseColor: Colors.white,
+        action: () {
+          if (_formKey.currentState.validate()) {
+            new Future.delayed(Duration(seconds: 3))
+                .then((value) {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => CompletedPage()),
+                      (route) => false
+              );
+            });
+          }
+        },
+      ),
+    );
+  }
+
   /// Function to check changes on the text controller
   /// it changes state of:
   /// - error messages
   /// - displayed amount
   /// - total amount
-  ///
   void inputAmountChanged(value) {
     // convert the value into a string
-    int amount = 0;
+    int amount = int.tryParse(value);
     double displayAmount = 0;
     double displayChange = 0;
 
     // error message holder
     String _error = "";
 
-    if (value == "") {
+    if (amount == null) {
       amount = 0;
     }
     else {
-
-      amount = int.tryParse(value);
-
-      if (amount == null) {
-        _error = "Invalid character";
-      }
-      else {
-        displayAmount = amount / 100;
-        double tot = displayAmount - _totalAmount;
-        if (tot > 0) {
-          displayChange = tot;
-        }
+      displayAmount = amount / 100;
+      double tot = displayAmount - _totalAmount;
+      if (tot > 0) {
+        displayChange = tot;
       }
     }
     setState(() {
@@ -164,22 +235,13 @@ class _CashPageState extends State<CashPage> {
   /// Function to validate the value of the controller
   String validateInputAmount(String value) {
     // value comes as an integer
-    int amount;
+    int amount = int.tryParse(value);
 
-    if (value == '' || value == null) {
+    if (amount == null) {
       setState(() {
-        _errorMsg = "Amount can't be 0";
+        _errorMsg = "Amount could not be processed";
       });
       return "No input";
-    }
-    // convert string to integer
-    amount = int.tryParse(value);
-
-    if(amount == null) {
-      setState(() {
-        _errorMsg = "Amount must be numeric";
-      });
-      return "must be numeric";
     }
 
     // amount less than minimum
@@ -199,10 +261,8 @@ class _CashPageState extends State<CashPage> {
     return null;
   }
 
-  ///
   /// Text input hidden from user to input
   /// amount in integer form
-  ///
   Widget amountInput() {
     return Opacity(
       opacity: 0.0,
@@ -224,6 +284,7 @@ class _CashPageState extends State<CashPage> {
       )
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -250,71 +311,22 @@ class _CashPageState extends State<CashPage> {
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              // Error message displayed to user if any
-              displayErrorMessage(),
-              // displays the title along with icon
-              displayTitle(),
-              // Amount to show with Text editor on top
-              // in case the user dismisses the keyboard but wants
-              // to call it back
-              Stack(
-                fit: StackFit.loose,
-                children: [
-                  // Shows amount in decimal form
-                  displayAmount(),
-                  // call to keyboard
-                  amountInput()
-                ],
-              ),
-              // Shows total after calculating extra costs
-              displayTotal(),
-              // shows the change to give back
-              displayChange(),
-              SizedBox(height: 30),
-              Center(
-                child: SliderButton(
-                  label: Text(
-                    "Swipe to complete",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17
-                    ),
-                  ),
-                  icon: Center(
-                      child: Icon(
-                        Icons.double_arrow_outlined,
-                        color: Colors.white,
-                        size: 40.0,
-                        semanticLabel: 'Text to announce in accessibility modes',
-                      )
-                  ),
-                  ///Change All the color and size from here.
-                  width: 270,
-                  buttonColor: Colors.green,
-                  backgroundColor: Colors.blue,
-                  highlightedColor: Colors.green,
-                  baseColor: Colors.white,
-                  action: () {
-                    new Future.delayed(Duration(seconds: 5)).then((value) => {
-                      Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => CompletedPage()),
-                      (route) => false
-                      )
-                    });
-                  },
-                ),
-              )
-            ]
-          )
-        ),
-      )
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          children: [
+            displayErrorMessage(),  // Error message displayed to user if any
+            displayTitle(),  // displays the title along with icon
+            // Amount to show with Text editor on top
+            // in case the user dismisses the keyboard but wants
+            // to call it back
+            amountInputForm(),
+            displayTotal(),   // Shows total after calculating extra costs
+            displayChange(),  // shows the change to give back
+            SizedBox(height: 20),
+            slideButton(context),
+          ]
+        )
+      ),
     );
   }
 }

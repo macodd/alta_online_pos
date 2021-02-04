@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'examples/example_objects.dart';
+
 // user profile
 import 'models/order.dart';
 
@@ -134,19 +136,46 @@ class _HomePage extends State<HomePage> {
     );
   }
 
+  Widget startButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        height: 100,
+        width: double.infinity,
+        child: RaisedButton(
+          color: Colors.lightBlueAccent,
+          child: Text("Start",
+              style: TextStyle(color: Colors.white)),
+          onPressed: () {
+            if (_paymentType != null) {
+              // sets the type of payment for later use
+              Order.setPaymentType(_paymentType);
+              // pushes to next page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => StartPage()),
+              );
+            }
+          },
+        ),
+      )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: Colors.transparent,
-          leading:
-              Padding(padding: const EdgeInsets.all(10), child: FlutterLogo()),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Center(
-                  child: Row(
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: Colors.transparent,
+        leading:
+            Padding(padding: const EdgeInsets.all(10), child: FlutterLogo()),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Center(
+              child: Row(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 6),
@@ -159,11 +188,13 @@ class _HomePage extends State<HomePage> {
                     style: TextStyle(color: Colors.black),
                   )
                 ],
-              )),
-            )
-          ],
-        ),
-        body: Container(
+              )
+            ),
+          )
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Container(
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 2),
             child: Card(
               elevation: 10.0,
@@ -184,31 +215,13 @@ class _HomePage extends State<HomePage> {
                           ],
                         ),
                       ),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Container(
-                            height: 100,
-                            width: double.infinity,
-                            child: RaisedButton(
-                              color: Colors.lightBlueAccent,
-                              child: Text("Start",
-                                  style: TextStyle(color: Colors.white)),
-                              onPressed: () {
-                                if (_paymentType != null) {
-                                  // sets the type of payment for later use
-                                  Order.setPaymentType(_paymentType);
-                                  // pushes to next page
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => StartPage()),
-                                  );
-                                }
-                              },
-                            ),
-                          )),
+                      startButton(),
                     ],
-                  )),
-            )));
+                  )
+              ),
+            )
+        )
+      )
+    );
   }
 }

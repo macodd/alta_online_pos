@@ -8,7 +8,7 @@ import 'client_info_page.dart';
 import 'models/order.dart';
 import 'models/customer.dart';
 
-import 'models/example_objects.dart';
+import 'examples/example_objects.dart';
 
 /// Search class that allows users to search the database
 /// for previously registered customers.
@@ -65,6 +65,74 @@ class _ClientSearchPageState extends State<ClientSearchPage> {
     return "Invalid ID";
   }
 
+  Widget displayTitle() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Text(
+        "Client ID Search",
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 32
+        ),
+      )
+    );
+  }
+
+  Widget searchForm() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Form(
+        key: _searchFormKey,
+        child: TextFormField(
+          controller: _searchField,
+          focusNode: _focusNode,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.search_outlined),
+            fillColor: Colors.transparent,
+            hintText: "Search",
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30)
+            )
+          ),
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(13)
+          ],
+          onSaved: (val) {
+            _clientID = val;
+          },
+          validator: _clientValidation,
+        ),
+      )
+    );
+  }
+
+  // widget to re route base on selection
+  Widget searchButton() {
+    return Container(
+      width: 200,
+      height: 50,
+      child: RaisedButton(
+          color: Colors.blue,
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          child: Text(
+            "Search",
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () {
+            _focusNode.unfocus();
+            if (_searchFormKey.currentState.validate()) {
+              _searchFormKey.currentState.save();
+              Customer _customer = ExampleCustomer.searchCustomer(_clientID);
+              showFoundClient(_customer);
+            }
+          }
+      ),
+    );
+  }
+
   /// shows the user if the customer is in the database
   void showFoundClient(Customer _customer) {
     // widget to store search result
@@ -103,57 +171,35 @@ class _ClientSearchPageState extends State<ClientSearchPage> {
               ),
             ),
             onTap: () {
-              Order.setCustomer(_customer);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ClientInfoPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ClientInfoPage(customer: _customer)
+                  )
+              );
             },
           )
         ],
       );
     } else {
       _result = Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Text(
-              "No Customer Found",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          )
-        ]
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                "No Customer Found",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            )
+          ]
       );
     }
     // set the state of the show result widget
     setState(() {
       _showSearchResult = _result;
     });
-  }
-
-  // widget to re route base on selection
-  Widget searchButton() {
-    return Container(
-      width: 150,
-      height: 50,
-      child: RaisedButton(
-        color: Colors.blue,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        child: Text(
-          "Search",
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () {
-          _focusNode.unfocus();
-          if (_searchFormKey.currentState.validate()) {
-            _searchFormKey.currentState.save();
-            Customer _customer = ExampleCustomer.searchCustomer(_clientID);
-            showFoundClient(_customer);
-          }
-        }
-      ),
-    );
   }
 
   @override
@@ -185,57 +231,18 @@ class _ClientSearchPageState extends State<ClientSearchPage> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
-                    "Client ID Search",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 32
-                    ),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Form(
-                        key: _searchFormKey,
-                        child: TextFormField(
-                          controller: _searchField,
-                          focusNode: _focusNode,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search_outlined),
-                            fillColor: Colors.transparent,
-                            hintText: "Search",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30)
-                            )
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(13)
-                          ],
-                          onSaved: (val) {
-                            _clientID = val;
-                          },
-                          validator: _clientValidation,
-                        ),
-                      )),
-                  searchButton(),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Container(
-                    child: _showSearchResult,
-                  ),
-                ],
-              ),
-            )
+            displayTitle(),
+            SizedBox(height: 10),
+            searchForm(),
+            SizedBox(height: 16),
+            searchButton(),
+            SizedBox(height: 30),
+            Container(
+              child: _showSearchResult,
+            ),
           ],
         ),
-      )
+      ),
     );
   }
 }

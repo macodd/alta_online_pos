@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'examples/example_objects.dart';
+
 // input price page
 import 'price_page.dart';
 
 // cart class
-import 'models/order.dart';
 import 'models/product.dart';
 
 /// New Item page
@@ -24,16 +25,13 @@ class _NewItemPageState extends State<NewItemPage> {
   // form key
   final GlobalKey<FormState> _formKey = new GlobalKey();
 
-  // email text box
+  // name text box
   final TextEditingController _nameController = TextEditingController();
-
-  // email text box
-  final TextEditingController _skuController = TextEditingController();
 
   // item name and sku
   // quantity defaults to 1 for new items
   String _itemName;
-  String _itemSKU;
+  String _itemSKU = ExampleProducts.getNextSKU();
   final int _quantity = 1;
 
   // cleans the components when closed
@@ -41,13 +39,21 @@ class _NewItemPageState extends State<NewItemPage> {
   void dispose() {
     super.dispose();
     _nameController.dispose();
-    _skuController.dispose();
   }
 
-  /*
-   * Text field for item name
-   * TODO: test length
-   */
+  /// display the title of the page
+  Widget displayTitle() {
+    return Text(
+      "New Item",
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 32,
+      ),
+    );
+  }
+
+  /// Text field for item name
+  /// TODO: test length
   Widget itemNameInput() {
     return TextFormField(
       controller: _nameController,
@@ -67,25 +73,16 @@ class _NewItemPageState extends State<NewItemPage> {
     );
   }
 
-  /*
-   * SKU input text field (optional)
-   * TODO: test length
-   */
-  Widget itemSKUInput() {
+  /// SKU input text field (optional)
+  /// TODO: test length
+  Widget itemSKUDisplay() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30),
-      child: TextFormField(
-        controller: _skuController,
-        decoration: const InputDecoration(
-          labelText: 'SKU (optional)*',
+      child: Text(
+        "SKU : " + _itemSKU,
+        style: TextStyle(
+          color: Colors.grey
         ),
-        inputFormatters: [LengthLimitingTextInputFormatter(10)],
-        onSaved: (val) {
-          _itemSKU = val == null ? "" : val;
-        },
-        validator: (val) {
-          return null;
-        },
       )
     );
   }
@@ -94,9 +91,9 @@ class _NewItemPageState extends State<NewItemPage> {
    * Button to move to next page
    */
   Widget nextButton() {
-    return Container(
+    return SizedBox(
       height: 50,
-      width: 150,
+      width: 200,
       child: RaisedButton(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
@@ -110,11 +107,12 @@ class _NewItemPageState extends State<NewItemPage> {
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
             // creates a new Cart item and adds it to the list
-            Order.cart.addToCart(
-                new CartItem(_itemName, _itemSKU, _quantity)
-            );
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => PriceInputPage())
+                MaterialPageRoute(
+                    builder: (context) => PriceInputPage(
+                        newItem: new CartItem(_itemName, _itemSKU, 0.0, _quantity)
+                    )
+                )
             );
           }
         },
@@ -149,13 +147,8 @@ class _NewItemPageState extends State<NewItemPage> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(
-              "New Item",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 32,
-              ),
-            ),
+            displayTitle(),
+            SizedBox(height: 10),
             Form(
               key: _formKey,
               child: Column(
@@ -163,8 +156,8 @@ class _NewItemPageState extends State<NewItemPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   itemNameInput(),
-                  itemSKUInput(),
-                  nextButton()
+                  itemSKUDisplay(),
+                  nextButton(),
                 ],
               ),
             ),

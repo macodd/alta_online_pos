@@ -34,11 +34,27 @@ class StartPage extends StatelessWidget {
     return icon;
   }
 
+  Widget customDivider() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: SizedBox(
+        width: 100,
+        child: Divider(),
+      ),
+    );
+  }
+
+  // TODO make image
+  Widget displayImage() {
+    return SizedBox(
+      height: 150,
+      child: initIconState(),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    // set the icon based on the payment method
-    Icon _icon = initIconState();
-
     // widget to re route base on selection
     Widget itemSelector(_text, _someClass) {
       return SizedBox(
@@ -78,23 +94,19 @@ class StartPage extends StatelessWidget {
           )
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            SizedBox(
-              height: 100,
-              child: _icon,
-            ),
-            itemSelector("New Item", NewItemPage()),
-            SizedBox(
-              width: 100,
-              child: Divider(height: 40),
-            ),
-            itemSelector("Select Items", ProductsListPage())
-          ],
-        ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              displayImage(),
+              itemSelector("New Item", NewItemPage()),
+              customDivider(),
+              itemSelector("Select Items", ProductsListPage())
+            ],
+          ),
+        )
       ),
     );
   }

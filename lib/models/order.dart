@@ -15,6 +15,11 @@ class Order {
   // payment type stored
   static PaymentMethod _paymentType;
 
+  // return the total + 0.50 for transaction cost
+  static double getTotal() {
+    return cart.getTotal() + 0.5;
+  }
+
   // clears the current order
   static void clear() {
     _customer = null;

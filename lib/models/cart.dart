@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'product.dart';
 
 /// Cart
@@ -6,45 +8,41 @@ import 'product.dart';
 /// TODO: add max amount of items to be added to cart
 class Cart {
   // list of items
-  List<CartItem> _items;
+  Map<String, CartItem> _items;
   // added total of unit price + quantity
-  double _total;
+  double _cartTotal;
 
   // constructor
   Cart() {
-    _items = new List();
-    _total = 0;
+    _items = new SplayTreeMap();
+    _cartTotal = 0;
   }
 
   // adds an item to the cart
-  void addToCart(Product item) {
-    _items.add(item);
+  // if it already exist, subtract total,
+  // update quantity, and update cart total
+  void addToCart(String key, CartItem newItem) {
+    if (_items.containsKey(key)) {
+      _cartTotal -= _items[key].getItemTotal();
+      _items[key].quantity += newItem.quantity;
+      _cartTotal += _items[key].getItemTotal();
+    }
+    else {
+      _items[key] = newItem;
+      _cartTotal += newItem.getItemTotal();
+    }
   }
 
   // gets the total
-  double getTotal() => _total;
+  double getTotal() => _cartTotal;
 
   // returns the amount of items in the cart
   int numOfItems() => _items.length;
 
-  // removes the last item added
-  void removeLast() {
-    _items.removeLast();
-  }
-
-  void removeLastPrice() {
-    _total -= double.tryParse(_items.last.getItemTotal().toStringAsFixed(2));
-  }
-
-  /// adds a price to the last item added
-  /// updates the total
-  void addPrice(double price) {
-    _items.last.unitPrice = price;
-    _total += price;
-  }
+  // removes the item at index
+  void removeItem(String key) => _cartTotal -= _items.remove(key).getItemTotal();
 
   // returns a specific item at index location
-  CartItem getItem(int index) {
-    return _items[index];
-  }
+  CartItem getItem(int index) => _items.values.elementAt(index);
+
 }

@@ -11,7 +11,7 @@ import 'home_page.dart';
  */
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // waits on firebase to initialize
+  // await Firebase.initializeApp(); // waits on firebase to initialize
   runApp(AltaApp());
 }
 

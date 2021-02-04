@@ -6,6 +6,7 @@ import 'cart_page.dart';
 
 // cart class
 import 'models/order.dart';
+import 'models/product.dart';
 
 /// Price Input Page
 /// Allows the users to input a price between 10 and 500
@@ -13,6 +14,10 @@ import 'models/order.dart';
 /// The user can see the total amount of the
 /// price + 5% for the service
 class PriceInputPage extends StatefulWidget {
+  PriceInputPage({key, this.newItem}) : super(key: key);
+
+  final CartItem newItem;
+
   @override
   _PriceInputPageState createState() => _PriceInputPageState();
 }
@@ -36,8 +41,8 @@ class _PriceInputPageState extends State<PriceInputPage> {
   // Error message
   String _errorMsg = "";
 
-  // min amount allowed to input
-  final int minAmount = 1000;
+  final int minAmount = 100;
+
   // max amount allowed to input
   final int maxAmount = 50000;
 
@@ -159,42 +164,34 @@ class _PriceInputPageState extends State<PriceInputPage> {
     );
   }
 
-  ///
   /// Function to check changes on the text controller
   /// it changes state of:
   /// - error messages
   /// - displayed amount
   /// - total amount
-  ///
   void inputAmountChanged(value) {
     // convert the value into a string
-    int amount = 0;
+    int amount = int.tryParse(value);
     double displayA = 0;
     double totalA = 0;
 
     // error message holder
     String _error = "";
 
-    if (value == "") {
+    if (value == "" || amount == null) {
       amount = 0;
-    } else {
-      try {
-        amount = int.parse(value);
-      } catch (err) {
-        setState(() {
-          _errorMsg = "Invalid character";
-        });
-        return;
-      } finally {
-        displayA = amount / 100;
-        if (amount < minAmount) {
-          totalA = displayA;
-        } else if (amount > maxAmount) {
-          totalA = displayA;
-          _error = "Amount can't exceed 500.00";
-        } else {
-          totalA = displayA + (displayA * 0.05) + 0.5;
-        }
+    }
+    else {
+      displayA = amount / 100;
+      if (amount < minAmount) {
+        totalA = displayA;
+      }
+      else if (amount > maxAmount) {
+        totalA = displayA;
+        _error = "Amount can't exceed 500.00";
+      }
+      else {
+        totalA = displayA + (displayA * 0.05);
       }
     }
     setState(() {
@@ -204,33 +201,23 @@ class _PriceInputPageState extends State<PriceInputPage> {
     });
   }
 
-  ///
   /// Function to validate the value of the controller
-  ///
   String validateInputAmount(String value) {
     // value comes as an integer
-    int amount;
+    int amount = int.tryParse(value);
+
     if (value == '' || value == null) {
       setState(() {
         _errorMsg = "Amount can't be 0";
       });
       return "No input";
     }
-    // convert string to integer
-    try {
-      amount = int.parse(value);
-    } catch (err) {
-      setState(() {
-        _errorMsg = "Amount must be numeric";
-      });
-      return "must be numeric";
-    }
     // amount less than minimum
     if (amount < minAmount) {
       setState(() {
-        _errorMsg = "Amount can't be under 10.00";
+        _errorMsg = "Amount can't be under 1.00";
       });
-      return "under 10.00";
+      return "under 1.00";
     }
     // amount more than maximum
     if (amount > maxAmount) {
@@ -268,31 +255,33 @@ class _PriceInputPageState extends State<PriceInputPage> {
     );
   }
 
-  Widget nextButton() {
+  Widget submitButton() {
     return SizedBox(
       height: 50,
-      width: 100,
+      width: 200,
       child: RaisedButton(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30)
+          borderRadius: BorderRadius.circular(30),
         ),
         color: Colors.blue,
         child: Text(
           "Continue",
-          style: TextStyle(
-              color: Colors.white
-          )
+          style: TextStyle(color: Colors.white),
         ),
         onPressed: () {
           if (_formKey.currentState.validate()) {
             // add the price of the last item to the list
-            Order.cart.addPrice(
-                double.parse(_totalAmount.toStringAsFixed(2))
-            );
+            widget.newItem.unitPrice =
+                double.parse(_totalAmount.toStringAsFixed(2));
+            // add item to list in order
+            Order.cart.addToCart(widget.newItem.sku, widget.newItem);
+            // push to next page
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CartPage()));
+                MaterialPageRoute(
+                    builder: (context) => CartPage(previousSKU: widget.newItem.sku))
+            );
           }
-        },
+        }
       ),
     );
   }
@@ -304,17 +293,14 @@ class _PriceInputPageState extends State<PriceInputPage> {
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         leading: Padding(
-            padding: const EdgeInsets.all(10),
-            child: BackButton(
-              color: Colors.black,
-              onPressed: () {
-                // remove last item in order to not
-                // added it again in case of switching
-                //back and forth between screens
-                Order.cart.removeLast();
-                Navigator.pop(context);
-              },
-            )),
+          padding: const EdgeInsets.all(10),
+          child: BackButton(
+            color: Colors.black,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(10),
@@ -330,10 +316,8 @@ class _PriceInputPageState extends State<PriceInputPage> {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             children: [
-              // Error message displayed to user if any
-              displayErrorMessage(),
-              // displays the title along with icon
-              displayTitle(),
+              displayErrorMessage(),  // Error message displayed to user if any
+              displayTitle(),  // displays the title along with icon
               // Amount to show with Text editor on top
               // in case the user dismisses the keyboard but wants
               // to call it back
@@ -346,11 +330,9 @@ class _PriceInputPageState extends State<PriceInputPage> {
                   amountInput()
                 ],
               ),
-              // Shows total after calculating extra costs
-              displayTotal(),
+              displayTotal(),  // Shows total after calculating extra costs
               SizedBox(height: 30),
-              // show the bottom button
-              nextButton(),
+              submitButton(),   // show the bottom button
             ]
           )
         ),
