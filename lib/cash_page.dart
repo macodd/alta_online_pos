@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-// third party
-import 'package:slider_button/slider_button.dart';
+import 'package:slide_to_confirm/slide_to_confirm.dart';
 
 import 'models/order.dart';
 
@@ -160,47 +158,6 @@ class _CashPageState extends State<CashPage> {
     );
   }
 
-  Widget slideButton(context) {
-    return Center(
-      child: SliderButton(
-        label: Text(
-          "Swipe to complete",
-          style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 17
-          ),
-        ),
-        icon: Center(
-            child: Icon(
-              Icons.double_arrow_outlined,
-              color: Colors.white,
-              size: 40.0,
-              semanticLabel: 'Text to announce in accessibility modes',
-            )
-        ),
-        ///Change All the color and size from here.
-        width: 270,
-        buttonColor: Colors.green,
-        backgroundColor: Colors.blue,
-        highlightedColor: Colors.green,
-        baseColor: Colors.white,
-        action: () {
-          if (_formKey.currentState.validate()) {
-            new Future.delayed(Duration(seconds: 3))
-                .then((value) {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => CompletedPage()),
-                      (route) => false
-              );
-            });
-          }
-        },
-      ),
-    );
-  }
-
   /// Function to check changes on the text controller
   /// it changes state of:
   /// - error messages
@@ -245,7 +202,7 @@ class _CashPageState extends State<CashPage> {
     }
 
     // amount less than minimum
-    if (amount < _totalAmount) {
+    if ((amount/100) < _totalAmount) {
       setState(() {
         _errorMsg = "Amount can't be less than the total";
       });
@@ -285,6 +242,30 @@ class _CashPageState extends State<CashPage> {
     );
   }
 
+  void confirmed() {
+    if (_formKey.currentState.validate()) {
+      new Future.delayed(const Duration(seconds: 3)).then((value) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context)=> CompletedPage()),
+            ModalRoute.withName("/main")
+        );
+      });
+    }
+  }
+
+  Widget confirmButton() {
+    return ConfirmationSlider(
+      backgroundColor: Colors.white,
+      backgroundColorEnd: Colors.blue,
+      foregroundColor: Colors.blue,
+      icon: Icons.double_arrow_outlined,
+      shadow: BoxShadow(color: Colors.white),
+      text: "Slide to complete",
+      backgroundShape: BorderRadius.circular(25),
+      onConfirmation: confirmed
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -323,7 +304,7 @@ class _CashPageState extends State<CashPage> {
             displayTotal(),   // Shows total after calculating extra costs
             displayChange(),  // shows the change to give back
             SizedBox(height: 20),
-            slideButton(context),
+            confirmButton()
           ]
         )
       ),

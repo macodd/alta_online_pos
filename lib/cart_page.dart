@@ -100,9 +100,10 @@ class _CartPageState extends State<CartPage> {
               ),
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => StartPage()) //client
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => StartPage()
+                  )
                 );
               },
             ),
@@ -138,14 +139,16 @@ class _CartPageState extends State<CartPage> {
                             topRight: Radius.circular(10)
                           )
                         ),
-                        content: Text("Amount must be \$ 11.00 or higher"))
+                        content: Text("Amount must be \$ 11.00 or higher")
+                      )
                   );
                 }
                 else {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ClientSearchPage()) //client
+                          builder: (context) => ClientSearchPage()
+                      )
                   );
                 }
               },
@@ -167,7 +170,9 @@ class _CartPageState extends State<CartPage> {
           child: BackButton(
             color: Colors.black,
             onPressed: () {
-              Order.cart.removeItem(widget.previousSKU);
+              if (widget.previousSKU != null) {
+                Order.cart.removeItem(widget.previousSKU);
+              }
               Navigator.pop(context);
             },
           )

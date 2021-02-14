@@ -29,8 +29,7 @@ dependencies:
   # added for firebase auth
   firebase_auth: ^0.20.0+1
   shared_preferences: ^0.5.12+4
-  slider_button: ^0.6.0
-
+  slide_to_confirm: ^0.0.7
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -97,9 +97,11 @@ class _ItemsListPageState extends State<ProductsListPage> {
                     );
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CartPage())
-                      );
-                    }
+                      MaterialPageRoute(
+                          builder: (context) => CartPage(previousSKU: product.sku)
+                      )
+                    );
+                  }
                 )
               )
             ],
@@ -161,7 +163,7 @@ class _ItemsListPageState extends State<ProductsListPage> {
     );
   }
 
-  Widget nextButton(context) {
+  Widget nextButton() {
     return FloatingActionButton(
       backgroundColor: Colors.blue,
       child: Icon(Icons.arrow_forward),
@@ -206,7 +208,7 @@ class _ItemsListPageState extends State<ProductsListPage> {
           ]
         )
       ),
-      floatingActionButton: nextButton(context)
+      floatingActionButton: nextButton()
     );
   }
 }

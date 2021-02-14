@@ -31,6 +31,7 @@ class _NewItemPageState extends State<NewItemPage> {
   // item name and sku
   // quantity defaults to 1 for new items
   String _itemName;
+  // TODO: fix updating sku num
   String _itemSKU = ExampleProducts.getNextSKU();
   final int _quantity = 1;
 

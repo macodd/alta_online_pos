@@ -51,13 +51,10 @@ class _ClientSearchPageState extends State<ClientSearchPage> {
     _searchField.dispose();
   }
 
-  ///
   /// Validator for text field
-  ///
   String _clientValidation(String val) {
     // regex for only digits
     RegExp _digits = RegExp(r'^[0-9]+$');
-    print(val.length);
     // validators
     if ((val.length == 10 || val.length == 13) && _digits.hasMatch(val)) {
       return null;
@@ -213,9 +210,7 @@ class _ClientSearchPageState extends State<ClientSearchPage> {
             child: BackButton(
               color: Colors.black,
               onPressed: () {
-                Order.clear();
-                // TODO: fix to show before navigating to other page
-                Navigator.popAndPushNamed(context, '/main');
+                Navigator.pop(context);
               },
             )),
         actions: [

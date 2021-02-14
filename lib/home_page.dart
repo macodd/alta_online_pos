@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'examples/example_objects.dart';
-
 // user profile
 import 'models/order.dart';
 
